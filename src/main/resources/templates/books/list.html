@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Books</title>
-</head>
+<head th:replace="~{fragments :: head('Books')}"></head>
 <body>
-
-<div th:each="book: ${books}">
-    <a th:href="@{/books/{id}(id=${book.getId()})}"
-       th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></a>
-</div>
-
-<br>
-<hr>
-
-<a href="/books/new">Add a new book</a>
-
+<header th:replace="~{fragments :: navigation}"></header>
+<main>
+    <div class="heading"><h1>Books</h1><a class="button" th:href="@{/books/new}">Add a book</a></div>
+    <form th:action="@{/books}" method="get" class="toolbar">
+        <label for="size">Books per page</label>
+        <input id="size" name="books_per_page" type="number" min="1" th:max="${maxPageSize}" th:value="${page.size}">
+        <label class="checkbox"><input type="checkbox" name="sort_by_year" value="true" th:checked="${sortByYear}"> Sort by publication year</label>
+        <button type="submit">Apply</button>
+    </form>
+    <p th:if="${books.isEmpty()}" class="panel">No books on this page. <a th:href="@{/books}">Open the first page</a>.</p>
+    <ul class="cards">
+        <li th:each="book : ${books}" class="panel">
+            <a class="item-title" th:href="@{/books/{id}(id=${book.id})}" th:text="${book.title}"></a>
+            <p th:text="${book.author} + ' · ' + ${book.year}"></p>
+            <span th:if="${book.person == null}" class="badge">Available</span>
+            <span th:unless="${book.person == null}" class="badge">On loan</span>
+            <span th:if="${book.overdue}" class="badge overdue">Overdue</span>
+        </li>
+    </ul>
+    <nav class="actions" aria-label="Pagination">
+        <a th:if="${page.hasPrevious()}" th:href="@{/books(page=${page.number - 1},books_per_page=${page.size},sort_by_year=${sortByYear})}">Previous</a>
+        <span th:text="|Page ${page.number + 1} of ${page.totalPages == 0 ? 1 : page.totalPages}|"></span>
+        <a th:if="${page.hasNext()}" th:href="@{/books(page=${page.number + 1},books_per_page=${page.size},sort_by_year=${sortByYear})}">Next</a>
+    </nav>
+</main>
 </body>
 </html>

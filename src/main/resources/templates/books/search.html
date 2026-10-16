@@ -1,39 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Search book</title>
-</head>
+<head th:replace="~{fragments :: head('Search books')}"></head>
 <body>
-
-<form th:method="POST" th:action="@{/books/search}">
-    <label for="searchQuery">Enter a search query: </label>
-    <input type="text" id="searchQuery" name="q" th:value="${searchQuery}"/>
-    <br>
-    <input type="submit" value="Search!"/>
-
-    <br><br>
-
-    <div th:if="${books.size() == 0}">
-        <p>No books found</p>
-    </div>
-
-    <div th:unless="${books.size() == 0}">
-        <div th:each="book : ${books}" th:with="person=${book.getPerson()}">
-            <a th:href="@{/books/{id}(id=${book.getId()})}"
-               th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></a>
-
-            <p th:if="${person != null}">This book is assigned to:
-                <a th:href="@{/people/{id}(id=${person.getId()})}"
-                   th:text="${person.getName()}"></a>
-            </p>
-
-            <p th:unless="${person != null}" th:text="'The book is free'"></p>
-
-            <hr>
-        </div>
-    </div>
-</form>
-
+<header th:replace="~{fragments :: navigation}"></header>
+<main>
+    <h1>Search books</h1>
+    <form th:action="@{/books/search}" method="get" class="toolbar">
+        <label for="query">Title contains</label>
+        <input id="query" type="search" name="q" maxlength="255" th:value="${searchQuery}">
+        <button type="submit">Search</button>
+    </form>
+    <p class="hint" th:text="|Case insensitive search, up to ${maxResults} results.|"></p>
+    <p th:if="${!#strings.isEmpty(searchQuery) and books.isEmpty()}" class="panel">No matching books.</p>
+    <ul class="cards">
+        <li class="panel" th:each="book : ${books}">
+            <a class="item-title" th:href="@{/books/{id}(id=${book.id})}" th:text="${book.title}"></a>
+            <p th:text="${book.author} + ' · ' + ${book.year}"></p>
+            <p th:if="${book.person != null}">Borrower: <a th:href="@{/people/{id}(id=${book.person.id})}" th:text="${book.person.name}"></a></p>
+            <span th:if="${book.person == null}" class="badge">Available</span>
+            <span th:if="${book.overdue}" class="badge overdue">Overdue</span>
+        </li>
+    </ul>
+</main>
 </body>
 </html>

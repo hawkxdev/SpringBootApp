@@ -1,125 +1,118 @@
 package com.sokol.springcourse.Project2Boot.controllers;
 
+import com.sokol.springcourse.Project2Boot.config.LibraryProperties;
 import com.sokol.springcourse.Project2Boot.models.Book;
-import com.sokol.springcourse.Project2Boot.models.Person;
 import com.sokol.springcourse.Project2Boot.services.BookService;
 import com.sokol.springcourse.Project2Boot.services.PeopleService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
+/** Handles book pages. */
 @Controller
 @RequestMapping("/books")
 public class BookController {
+    private final BookService books;
+    private final PeopleService people;
+    private final LibraryProperties properties;
 
-    private final PeopleService peopleService;
-    private final BookService bookService;
-
-    @Autowired
-    public BookController(PeopleService peopleService, BookService bookService) {
-        this.peopleService = peopleService;
-        this.bookService = bookService;
+    /** Receives page services. */
+    public BookController(BookService books, PeopleService people, LibraryProperties properties) {
+        this.books = books;
+        this.people = people;
+        this.properties = properties;
     }
 
+    /** Restricts editable fields. */
+    @InitBinder("book")
+    public void bindBook(WebDataBinder binder) {
+        binder.setAllowedFields("title", "author", "year");
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    /** Lists paginated books. */
     @GetMapping
-    public String list(Model model,
-                       @RequestParam(value = "page", required = false) Integer page,
-                       @RequestParam(value = "books_per_page", required = false) Integer booksPerPage,
-                       @RequestParam(value = "sort_by_year", required = false) Boolean sortByYear) {
-        if (page == null && booksPerPage == null) {
-            model.addAttribute("books", bookService.getAllBooks(sortByYear));
-        } else {
-            model.addAttribute("books", bookService.getBooksByPage(page, booksPerPage, sortByYear));
-        }
+    public String list(@RequestParam(defaultValue = "0") int page,
+                       @RequestParam(name = "books_per_page", required = false) Integer size,
+                       @RequestParam(name = "sort_by_year", defaultValue = "false") boolean sortByYear,
+                       Model model) {
+        Page<Book> result = books.getBooksByPage(page, size == null ? properties.defaultPageSize() : size, sortByYear);
+        model.addAttribute("books", result.getContent());
+        model.addAttribute("page", result);
+        model.addAttribute("sortByYear", sortByYear);
+        model.addAttribute("maxPageSize", properties.maxPageSize());
         return "books/list";
     }
 
+    /** Opens creation form. */
     @GetMapping("/new")
-    public String newForm(Model model, @ModelAttribute("book") Book book) {
-        return "books/new";
-    }
+    public String newForm(@ModelAttribute("book") Book book) { return "books/new"; }
 
+    /** Creates validated books. */
     @PostMapping
-    public String processNewForm(@Valid @ModelAttribute("book") Book book, BindingResult result) {
-        if (result.hasErrors()) {
-            return "books/new";
-        }
-        bookService.saveBook(book);
-        return "redirect:/books";
+    public String create(@Valid @ModelAttribute("book") Book book, BindingResult result) {
+        if (result.hasErrors()) { return "books/new"; }
+        Book created = books.saveBook(book);
+        return "redirect:/books/" + created.getId();
     }
 
+    /** Shows book details. */
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model) {
-        Optional<Book> book = bookService.getBookById(id);
-        if (book.isPresent()) {
-            model.addAttribute("book", book.get());
-            model.addAttribute("people", peopleService.findAll());
-            Optional<Person> person = Optional.ofNullable(book.get().getPerson());
-            person.ifPresent(p -> model.addAttribute("person", p));
-            return "books/show";
-        } else {
-            return "redirect:/books";
-        }
+    public String show(@PathVariable int id, Model model) {
+        model.addAttribute("book", books.getBookById(id));
+        model.addAttribute("people", people.findAll());
+        return "books/show";
     }
 
+    /** Opens metadata editor. */
+    @GetMapping("/{id}/edit")
+    public String edit(@PathVariable int id, Model model) {
+        model.addAttribute("book", books.getBookById(id));
+        return "books/edit";
+    }
+
+    /** Updates validated metadata. */
+    @PatchMapping("/{id}")
+    public String update(@PathVariable int id, @Valid @ModelAttribute("book") Book book, BindingResult result) {
+        books.getBookById(id);
+        book.setId(id);
+        if (result.hasErrors()) { return "books/edit"; }
+        books.updateBook(id, book);
+        return "redirect:/books/" + id;
+    }
+
+    /** Assigns a borrower. */
     @PatchMapping("/assign")
     public String assign(@RequestParam("person_id") int personId, @RequestParam("book_id") int bookId) {
-        Optional<Person> person = peopleService.findById(personId);
-        if (person.isPresent()) {
-            bookService.setPerson(bookId, person.get());
-            return "redirect:/books";
-        }
-        return null;
+        books.assign(bookId, personId);
+        return "redirect:/books/" + bookId;
     }
 
+    /** Releases a loan. */
     @PatchMapping("/free")
-    public String free(@RequestParam("book_id") int bookId) {
-        bookService.setPerson(bookId, null);
-        return "redirect:/books";
+    public String release(@RequestParam("book_id") int bookId) {
+        books.release(bookId);
+        return "redirect:/books/" + bookId;
     }
 
+    /** Deletes available books. */
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") int id) {
-        bookService.deleteBook(id);
+    public String delete(@PathVariable int id) {
+        books.deleteBook(id);
         return "redirect:/books";
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(@PathVariable("id") int id, Model model) {
-        Optional<Book> book = bookService.getBookById(id);
-        if (book.isPresent()) {
-            model.addAttribute("book", book.get());
-            return "books/edit";
-        }
-        return "redirect:/books";
-    }
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("book") @Valid Book book, BindingResult result, @PathVariable("id") int id) {
-        if (result.hasErrors()) {
-            return "books/edit";
-        }
-        bookService.updateBook(id, book);
-        return "redirect:/books";
-    }
-
+    /** Searches library titles. */
     @GetMapping("/search")
-    public String search() {
+    public String search(@RequestParam(name = "q", defaultValue = "") String query, Model model) {
+        model.addAttribute("searchQuery", query);
+        model.addAttribute("books", books.search(query));
+        model.addAttribute("maxResults", properties.maxPageSize());
         return "books/search";
     }
-
-    @PostMapping("/search")
-    public String search(@RequestParam("q") String searchQuery, Model model) {
-        model.addAttribute("searchQuery", searchQuery);
-        List<Book> foundBooks = bookService.search(searchQuery);
-        model.addAttribute("books", foundBooks);
-        return "books/search";
-    }
-
 }

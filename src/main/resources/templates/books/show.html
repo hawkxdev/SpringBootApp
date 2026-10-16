@@ -1,44 +1,38 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Book</title>
-</head>
+<head th:replace="~{fragments :: head('Book details')}"></head>
 <body>
-
-<p th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}">VALUE</p>
-
-<div th:if="${book.getPerson() == null}">
-    <p>This book is free. Who should I assign it to?</p>
-
-    <form th:method="PATCH" th:action="@{/books/assign}">
-        <label for="people">Choose a person:</label>
-        <select id="people" name="person_id">
-            <option th:each="person : ${people}" th:value="${person.getId()}" th:text="${person.getName()}"></option>
-        </select>
-
-        <input name="book_id" type="text" th:value="${book.getId()}" hidden>
-        <input type="submit" value="Assign a book">
-    </form>
-</div>
-
-<div th:unless="${book.getPerson() == null}">
-    <p th:text="'This book is assigned to: ' + ${person.getName()}"></p>
-
-    <form th:method="PATCH" th:action="@{/books/free}">
-        <input name="book_id" type="text" th:value="${book.getId()}" hidden>
-        <input type="submit" value="Free the book">
-    </form>
-</div>
-
-<br>
-<hr>
-
-<a th:href="@{/books/{id}/edit(id=${book.getId()})}">Edit</a><br>
-
-<form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
-    <input type="submit" value="Delete">
-</form>
-
+<header th:replace="~{fragments :: navigation}"></header>
+<main>
+    <h1 th:text="${book.title}"></h1>
+    <p class="subtitle" th:text="${book.author} + ' · ' + ${book.year}"></p>
+    <section class="panel" th:if="${book.person == null}">
+        <h2>Available</h2>
+        <p th:if="${people.isEmpty()}">Add a <a th:href="@{/people/new}">reader</a> before checking out this book.</p>
+        <form th:unless="${people.isEmpty()}" th:action="@{/books/assign}" th:method="patch" class="fields">
+            <input name="book_id" type="hidden" th:value="${book.id}">
+            <label for="reader">Reader</label>
+            <select id="reader" name="person_id" required>
+                <option th:each="reader : ${people}" th:value="${reader.id}" th:text="${reader.name}"></option>
+            </select>
+            <button type="submit">Check out book</button>
+        </form>
+    </section>
+    <section class="panel" th:unless="${book.person == null}">
+        <h2>On loan <span th:if="${book.overdue}" class="badge overdue">Overdue</span></h2>
+        <p>Borrower: <a th:href="@{/people/{id}(id=${book.person.id})}" th:text="${book.person.name}"></a></p>
+        <p>Checked out at <span th:text="${book.bookingTime}"></span> UTC</p>
+        <form th:action="@{/books/free}" th:method="patch">
+            <input name="book_id" type="hidden" th:value="${book.id}">
+            <button type="submit">Return book</button>
+        </form>
+    </section>
+    <div class="actions">
+        <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit book details</a>
+        <form th:if="${book.person == null}" th:action="@{/books/{id}(id=${book.id})}" th:method="delete">
+            <button type="submit" class="danger">Delete book</button>
+        </form>
+    </div>
+</main>
 </body>
 </html>

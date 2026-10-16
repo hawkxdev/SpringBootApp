@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="fields" class="fields">
+    <label for="title">Title</label>
+    <input id="title" type="text" th:field="*{title}" required maxlength="255" aria-describedby="title-error">
+    <p id="title-error" class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}" role="alert"></p>
+    <label for="author">Author</label>
+    <input id="author" type="text" th:field="*{author}" required maxlength="255" aria-describedby="author-error">
+    <p id="author-error" class="error" th:if="${#fields.hasErrors('author')}" th:errors="*{author}" role="alert"></p>
+    <label for="year">Publication year</label>
+    <input id="year" type="text" inputmode="numeric" th:field="*{year}" required pattern="[0-9]{4}" maxlength="4" aria-describedby="year-error">
+    <p id="year-error" class="error" th:if="${#fields.hasErrors('year')}" th:errors="*{year}" role="alert"></p>
+</div>
+</body>
+</html>

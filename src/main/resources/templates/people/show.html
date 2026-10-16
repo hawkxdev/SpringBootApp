@@ -1,36 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>Person</title>
-</head>
+<head th:replace="~{fragments :: head('Reader details')}"></head>
 <body>
-
-<p th:text="${person.getName() + ', ' + person.getYearOfBirth()}">VALUE</p>
-
-<div th:if="${books.size() == 0}">
-    <p>The person hasn't taken any of the books yet</p>
-</div>
-
-<div th:unless="${books.size() == 0}">
-    <p>Books:</p>
-
-    <div th:each="book : ${books}">
-        <a th:href="@{/books/{id}(id=${book.getId()})}"
-           th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYear()}"
-           th:style="${book.isOverdue()} ? 'color: red' : ''"></a>
-        <br>
+<header th:replace="~{fragments :: navigation}"></header>
+<main>
+    <h1 th:text="${person.name}"></h1>
+    <p class="subtitle" th:text="|Born ${person.yearOfBirth}|"></p>
+    <h2>Borrowed books</h2>
+    <p class="panel" th:if="${books.isEmpty()}">No outstanding loans.</p>
+    <ul class="cards">
+        <li class="panel" th:each="book : ${books}">
+            <a class="item-title" th:href="@{/books/{id}(id=${book.id})}" th:text="${book.title}"></a>
+            <p th:text="${book.author}"></p>
+            <span th:if="${book.overdue}" class="badge overdue">Overdue</span>
+        </li>
+    </ul>
+    <div class="actions">
+        <a th:href="@{/people/{id}/edit(id=${person.id})}">Edit reader</a>
+        <form th:if="${books.isEmpty()}" th:action="@{/people/{id}(id=${person.id})}" th:method="delete">
+            <button type="submit" class="danger">Delete reader</button>
+        </form>
+        <p th:unless="${books.isEmpty()}" class="hint">Return all books before deleting this reader.</p>
     </div>
-</div>
-
-<br>
-<hr>
-
-<a th:href="@{/people/{id}/edit(id=${person.getId()})}">Edit</a><br>
-
-<form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
-    <input type="submit" value="Delete">
-</form>
-
+</main>
 </body>
 </html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="fields" class="fields">
+    <label for="name">Reader name</label>
+    <input id="name" type="text" th:field="*{name}" required maxlength="100" aria-describedby="name-error">
+    <p id="name-error" class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" role="alert"></p>
+    <label for="yearOfBirth">Birth year</label>
+    <input id="yearOfBirth" type="text" inputmode="numeric" th:field="*{yearOfBirth}" required pattern="[0-9]{4}" maxlength="4" aria-describedby="birth-error">
+    <p id="birth-error" class="error" th:if="${#fields.hasErrors('yearOfBirth')}" th:errors="*{yearOfBirth}" role="alert"></p>
+</div>
+</body>
+</html>

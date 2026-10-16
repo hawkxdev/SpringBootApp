@@ -1,60 +1,30 @@
-HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
-
-### IntelliJ IDEA ###
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-.idea/
-
-### Compiled class files ###
-*.class
-
-### Maven and Gradle files ###
+bin/
 .gradle/
 .m2/
-
-### Mac OS ###
-**/.DS_Store
-
-### Eclipse ###
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### https://github.com/github/gitignore/blob/main/Maven.gitignore ###
-
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.apt_generated/
+.springBeans
+.sts4-cache/
+nbproject/private/
+nbbuild/
+nbdist/
+dist/
+.nb-gradle/
+*.iml
+*.iws
+*.ipr
+*.class
+*.log
+.DS_Store
+HELP.md
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -63,6 +33,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
-/src/main/resources/application.properties
+.env
+.env.*
+!.env.example
+.playwright-mcp/
+artifacts/

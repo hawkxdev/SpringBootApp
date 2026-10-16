@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | Library'">Library</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header th:fragment="navigation">
+    <a class="brand" th:href="@{/books}">Library</a>
+    <nav aria-label="Main navigation">
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/people}">Readers</a>
+        <a th:href="@{/books/search}">Search</a>
+    </nav>
+</header>
+</body>
+</html>

@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <title>People</title>
-</head>
+<head th:replace="~{fragments :: head('Readers')}"></head>
 <body>
-
-<div th:each="person: ${people}">
-    <a th:href="@{/people/{id}(id=${person.getId()})}"
-       th:text="${person.getName() + ', ' + person.getYearOfBirth()}"></a>
-</div>
-
-<br>
-<hr>
-
-<a href="/people/new">Add a new person</a>
-
+<header th:replace="~{fragments :: navigation}"></header>
+<main>
+    <div class="heading"><h1>Readers</h1><a class="button" th:href="@{/people/new}">Add a reader</a></div>
+    <p class="panel" th:if="${people.isEmpty()}">No readers yet.</p>
+    <ul class="cards">
+        <li class="panel" th:each="reader : ${people}">
+            <a class="item-title" th:href="@{/people/{id}(id=${reader.id})}" th:text="${reader.name}"></a>
+            <p th:text="|Born ${reader.yearOfBirth}|"></p>
+        </li>
+    </ul>
+</main>
 </body>
 </html>

@@ -1,0 +1,39 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f7f5; color: #193b33; font: 1rem/1.6 system-ui, sans-serif; }
+a { color: #08684f; text-underline-offset: .2em; }
+a:hover { color: #00382a; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #d28325; outline-offset: 3px; }
+header { padding: 1.2rem max(1.25rem, calc((100vw - 62rem) / 2)); background: #153d33; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+header a { color: #fff; text-decoration: none; }
+header a:hover { color: #d6e9df; }
+.brand { font-size: 1.4rem; font-weight: 750; }
+header nav { display: flex; gap: 1.3rem; flex-wrap: wrap; }
+main { width: min(62rem, 100%); margin: 2.5rem auto; padding: 0 1.25rem 3rem; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.2; overflow-wrap: anywhere; }
+h2 { font-size: 1.25rem; }
+.heading, .actions { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+.heading { justify-content: space-between; margin-bottom: 1rem; }
+.heading h1 { margin: 0; }
+.subtitle, .hint { color: #54665f; }
+.panel { padding: 1.4rem; background: #fff; border: 1px solid #cedbd3; border-radius: .6rem; }
+.panel p { overflow-wrap: anywhere; }
+.panel h2 { margin-top: 0; }
+.cards { padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+.item-title { font-size: 1.15rem; font-weight: 650; overflow-wrap: anywhere; }
+.badge { display: inline-block; padding: .2rem .6rem; background: #e4f1e9; border-radius: .25rem; font-size: .85rem; }
+.overdue { color: #8a251c; background: #fbe7e1; }
+.toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; margin: 1.5rem 0; }
+.toolbar input[type=number] { width: 5rem; }
+.toolbar input[type=search] { flex: 1; min-width: 10rem; }
+.checkbox { display: flex; align-items: center; gap: .5rem; }
+.fields { display: grid; gap: .55rem; max-width: 36rem; }
+.fields label { margin-top: .6rem; font-weight: 600; }
+input, select, button { font: inherit; }
+input:not([type=checkbox]), select { padding: .6rem .7rem; border: 1px solid #869b90; border-radius: .25rem; min-width: 0; }
+button, .button { display: inline-block; border: 0; border-radius: .3rem; background: #08684f; color: #fff; padding: .6rem 1.1rem; cursor: pointer; text-decoration: none; }
+button:hover, .button:hover { background: #004e3a; color: #fff; }
+.danger { background: #8a3027; }
+.error { margin: 0; color: #a22f20; font-size: .9rem; }
+.actions { margin-top: 1.4rem; }
+.actions form { margin: 0; }
+@media (max-width: 36rem) { header { align-items: flex-start; flex-direction: column; } main { margin-top: 1.5rem; } .panel { padding: 1rem; } }
