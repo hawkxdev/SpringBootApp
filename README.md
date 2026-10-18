@@ -116,7 +116,7 @@ src/main/resources/
   db/migration/  Shared schema migrations
   db/demo/       Fictional demo data
   templates/     Server rendered pages
-src/test/java/   Unit, HTTP and PostgreSQL integration tests
+tests/java/   Unit, HTTP and PostgreSQL integration tests
 ```
 
 ## Scope and design
@@ -128,3 +128,7 @@ Lending mutations lock existing rows inside transactions and recheck current sta
 ## Maintainers
 
 - [hawkxdev](https://github.com/hawkxdev)
+
+## Development
+
+Production sources and resources remain in `src/main/`; automated checks live in `tests/java/`. Run `./scripts/check.sh` for the full PostgreSQL suite with JDK 21 or newer and Docker. See [development](docs/development.md), [architecture](docs/architecture.md), and [technical decisions](docs/adr/0001-source-and-verification-layout.md). Project instructions are in `AGENTS.md`; accepted feature specifications belong in `specs/`.
